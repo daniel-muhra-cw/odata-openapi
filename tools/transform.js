@@ -117,7 +117,9 @@ function xalan(xslt, ...args) {
     "-XSL",
     toolsPath + xslt,
     ...args,
-  ]);
+  ], {
+    maxBuffer: 10 * 1024 * 1024 // 10MB buffer
+  });
 }
 
 function transformV2V3(source, version) {
