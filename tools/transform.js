@@ -167,6 +167,26 @@ function transformV4(source, version, deleteSource) {
     try {
       let openapi = JSON.parse(result.stdout);
 
+      //Add $format parameter to all get operations
+			for (var path in openapi.paths) {
+				var methods = openapi.paths[path];
+				for (var method in methods) {
+					//apply for all GET methods except on $metadata
+					if(method == "get" && path != "/$metadata"){
+						methods[method].parameters = methods[method].parameters || [];
+						methods[method].parameters.push({
+							"name": "$format",
+							"in": "query",
+							"description": "The format of the response. Supported values: json, xml",
+							"required": false,
+							"schema": {
+								"type": "string"
+							}
+						});
+					}
+				}
+			}
+
       if (argv.values["used-schemas-only"]) {
         if (argv.values.verbose) console.log("Deleting unused schemas");
         deleteUnusedSchemas(openapi);
